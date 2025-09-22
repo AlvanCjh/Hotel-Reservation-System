@@ -1,0 +1,48 @@
+﻿@model List<Demo.Models.UserViewModel>
+@{
+    ViewData["Title"] = "User Management";
+    Layout = "_Layout";
+}
+
+<head>
+    <link rel="stylesheet" href="~/css/userManage.css" />
+</head>
+
+<div class="admin-container">
+    <h1>User Management</h1>
+    <p class="admin-subtitle">View all registered users</p>
+
+    <div class="user-list">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Profile</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <td>
+                            <img src="@Url.Content("~/uploads/" + user.PhotoURL)"
+                                 class="user-avatar"
+                                 onerror="this.src='@Url.Content("~/images/default-profile.png")'" />
+                        </td>
+                        <td>@user.Name</td>
+                        <td>@user.Email</td>
+                        <td><span class="role-badge">@user.Role</span></td>
+                        <td>
+                            <a asp-action="UserDetails" asp-route-id="@user.Email" class="btn btn-view">
+                                <i class="fas fa-eye"></i> View
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

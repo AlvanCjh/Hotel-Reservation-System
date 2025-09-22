@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - YOBITA</title>
+    <link rel="webstore icon" href="~/images/IsaacOnDrugs.png" />
+    <link rel="stylesheet" href="~/css/app.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    @RenderSection("Styles", required: false)
+</head>
+<body>
+    <!-- Header Partial -->
+    @Html.Partial("_Header")
+
+    <!-- Main Body -->
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
+
+    <!-- Footer Partial -->
+    @Html.Partial("_Footer")
+
+    <!-- Scripts Section - Choose ONE of these options below -->
+    <!-- OPTION 1: Regular RenderSection -->
+    @RenderSection("Scripts", required: false)
+
+    <!-- OPTION 2: Async version (remove the above line if using this) -->
+    @* @await RenderSectionAsync("Scripts", required: false) *@
+
+    <!-- Common scripts that should load on every page -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAPACeYLYtCvDsSBexeiij5AL6FR6wQzqk&callback=initMap" async defer></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="/_framework/aspnetcore-browser-refresh.js"></script>
+</body>
+</html>

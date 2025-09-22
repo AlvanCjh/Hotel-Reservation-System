@@ -1,0 +1,77 @@
+﻿@inject IConfiguration Configuration
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Admin Login";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/login.css" />
+}
+
+
+    <div class="login-container">
+    <h1>Admin Login</h1>
+    <form id="admin-login-form" method="post" asp-action="AdminLogin">
+        <div class="form-group">
+      
+            <input name="email" type="email" placeholder="Email" required class="form-control" />
+        </div>
+
+        <div class="form-group">
+
+            <input name="password" type="password" placeholder="Password" required class="form-control" />
+        </div>
+
+            @* Show error/lockout messages *@
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger" id="login-error">@ViewBag.Error</div>
+            }
+            <div id="lockout-msg" style="margin-top:10px;color:#b00;"></div>
+
+        <div class="g-recaptcha" data-sitekey="@Configuration["GoogleReCaptcha:SiteKey"]"></div>
+        <button id="admin-login-btn" type="submit" class="btn btn-danger">Admin Log In</button>
+
+        <div class="switch-login">
+            <p>Not an admin? <a asp-action="MemberLogin">Member login</a></p>
+        </div>
+    </form>
+    </div>
+
+
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+@section Scripts {
+    <script>
+        (function () {
+            const lockoutSeconds = @((ViewBag.LockoutSeconds ?? 0));
+            if (lockoutSeconds && lockoutSeconds > 0) {
+                let seconds = lockoutSeconds;
+                const btn = document.getElementById('admin-login-btn');
+                const form = document.getElementById('admin-login-form');
+                const inputs = form.querySelectorAll('input');
+                const msg = document.getElementById('lockout-msg');
+
+                // Disable form inputs and button
+                btn.disabled = true;
+                inputs.forEach(i => i.disabled = true);
+
+                const tick = () => {
+                    if (seconds <= 0) {
+                        btn.disabled = false;
+                        inputs.forEach(i => i.disabled = false);
+                        msg.innerText = "You can try logging in again.";
+                        clearInterval(timer);
+                    } else {
+                        msg.innerText = `Please wait ${seconds} second(s) before trying again.`;
+                        seconds--;
+                    }
+                };
+
+                tick();
+                const timer = setInterval(tick, 1000);
+            }
+        })();
+    </script>
+}

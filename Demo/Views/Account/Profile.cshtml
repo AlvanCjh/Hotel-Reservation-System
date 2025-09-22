@@ -1,0 +1,203 @@
+﻿@model Demo.Models.User
+
+@{
+    ViewData["Title"] = "Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<head>
+    <link rel="stylesheet" href="~/css/profile.css" />
+    <!-- Add Cropper.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" />
+</head>
+
+<div class="profile-container">
+    <h1>Your Profile</h1>
+
+    <div class="profile-section">
+        <div class="profile-picture">
+            <img src="@Url.Content("~/uploads/" + Model.PhotoURL)" alt="Profile Picture" class="profile-img" onerror="this.src='@Url.Content("~/images/default-profile.png")'" />
+        </div>
+
+        <form asp-action="Profile" method="post" enctype="multipart/form-data" class="profile-form">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" disabled />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password" class="control-label">New Password (leave blank to keep current)</label>
+                <input asp-for="Password" class="form-control" type="password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword" class="control-label">Confirm New Password</label>
+                <input type="password" class="form-control" id="confirmPassword" />
+                <span id="confirmPasswordError" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="photoFile" class="control-label">Profile Picture</label>
+                <input type="file" id="photoFile" name="photoFile" class="form-control-file" accept="image/*" />
+                <input type="hidden" id="croppedImageData" name="croppedImageData" />
+            </div>
+
+            <!-- Cropper Modal -->
+            <div class="modal fade" id="cropModal" tabindex="-1" role="dialog" aria-labelledby="cropModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="cropModalLabel">Crop Your Image</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="img-container">
+                                <img id="imageToCrop" src="" alt="Picture to crop" style="max-width: 100%;">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-primary" id="cropImageBtn">Crop & Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Save Changes" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <!-- Add Cropper.js and supporting libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Password validation
+            $('form').submit(function(e) {
+                const newPassword = $('#Password').val();
+                const confirmPassword = $('#confirmPassword').val();
+
+                if (newPassword !== confirmPassword) {
+                    $('#confirmPasswordError').text('Passwords do not match');
+                    e.preventDefault();
+                    return false;
+                }
+                return true;
+            });
+
+            $('#confirmPassword').keyup(function() {
+                if ($('#confirmPasswordError').text() !== '') {
+                    $('#confirmPasswordError').text('');
+                }
+            });
+
+            // Image cropping functionality
+            let cropper;
+            const image = document.getElementById('imageToCrop');
+            const photoFileInput = document.getElementById('photoFile');
+            const cropModal = $('#cropModal');
+
+            photoFileInput.addEventListener('change', function(e) {
+                const files = e.target.files;
+                if (files && files.length > 0) {
+                    const reader = new FileReader();
+
+                    reader.onload = function(event) {
+                        cropModal.modal('show');
+                        image.src = event.target.result;
+
+                        // Initialize cropper when modal is shown
+                        cropModal.on('shown.bs.modal', function() {
+                            if (cropper) {
+                                cropper.destroy();
+                            }
+                            cropper = new Cropper(image, {
+                                aspectRatio: 1, // Square aspect ratio
+                                viewMode: 1, // Restrict crop box to not exceed the size of the canvas
+                                autoCropArea: 0.8, // 80% of the image will be initially cropped
+                                responsive: true,
+                                guides: true
+                            });
+                        });
+                    };
+                    reader.readAsDataURL(files[0]);
+                }
+            });
+
+            // Handle crop button click
+            $('#cropImageBtn').click(function() {
+                if (cropper) {
+                    // Get the cropped canvas
+                    const canvas = cropper.getCroppedCanvas({
+                        width: 300, // Set the desired width
+                        height: 300, // Set the desired height
+                        minWidth: 256,
+                        minHeight: 256,
+                        maxWidth: 4096,
+                        maxHeight: 4096,
+                        fillColor: '#fff',
+                        imageSmoothingEnabled: true,
+                        imageSmoothingQuality: 'high',
+                    });
+
+                    if (canvas) {
+                        // Convert canvas to blob
+                        canvas.toBlob(function(blob) {
+                            // Create a new File from the blob
+                            const file = new File([blob], photoFileInput.files[0].name, {
+                                type: 'image/jpeg',
+                                lastModified: Date.now()
+                            });
+
+                            // Create a new FileList and DataTransfer to update the file input
+                            const dataTransfer = new DataTransfer();
+                            dataTransfer.items.add(file);
+                            photoFileInput.files = dataTransfer.files;
+
+                            // Also store the cropped image as base64 in hidden field
+                            const croppedImageData = canvas.toDataURL('image/jpeg');
+                            $('#croppedImageData').val(croppedImageData);
+
+                            // Update the preview image
+                            $('.profile-img').attr('src', croppedImageData);
+
+                            // Hide the modal
+                            cropModal.modal('hide');
+
+                            // Destroy cropper
+                            cropper.destroy();
+                        }, 'image/jpeg', 0.9); // 0.9 is the quality (0-1)
+                    }
+                }
+            });
+
+            // Clean up cropper when modal is closed
+            cropModal.on('hidden.bs.modal', function() {
+                if (cropper) {
+                    cropper.destroy();
+                }
+            });
+        });
+    </script>
+}

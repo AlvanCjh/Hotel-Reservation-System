@@ -1,0 +1,37 @@
+﻿@model Demo.Models.UserViewModel
+@{
+    ViewData["Title"] = "User Details";
+    Layout = "_Layout";
+}
+
+<head>
+    <link rel="stylesheet" href="~/css/userDetail.css" />
+</head>
+
+<div class="admin-container">
+    <h1>User Details</h1>
+
+    <div class="user-details-card">
+        <div class="user-profile">
+            <img src="@Url.Content("~/uploads/" + Model.PhotoURL)"
+                 class="user-avatar-large"
+                 onerror="this.src='@Url.Content("~/images/default-profile.png")'" />
+            <h2>@Model.Name</h2>
+            <span class="role-badge">@Model.Role</span>
+        </div>
+
+        <div class="user-info">
+            <div class="info-item">
+                <label>Email:</label>
+                <span>@Model.Email</span>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <a asp-action="Users" class="btn btn-back">
+                <i class="fas fa-arrow-left"></i> Back to Users
+            </a>
+        </div>
+    </div>
+</div>
+

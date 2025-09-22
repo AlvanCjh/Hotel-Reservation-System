@@ -1,0 +1,30 @@
+﻿@model Demo.Models.Reservation
+
+@{
+    ViewData["Title"] = "Reservation Confirmation";
+    Layout = "_Layout";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/reservation.css" />
+}
+
+<div class="reservation-container">
+    <div class="reservation-title">
+        <h2>Reservation Confirmed</h2>
+    </div>
+
+
+    <p><strong>Reservation ID:</strong> @Model.ReservationId</p>
+    <p><strong>Room:</strong> @Model.Room.RoomId - @Model.Room.RoomType.Name</p>
+    <p><strong>Check-In:</strong> @Model.CheckIn</p>
+    <p><strong>Check-Out:</strong> @Model.CheckOut</p>
+    <p><strong>Total Price:</strong> @Model.TotalPrice.ToString("C")</p>
+
+    <a asp-action="Index" class="btn btn-primary">Back to Availability</a>
+    <a asp-action="Receipt" asp-route-id="@Model.ReservationId" target="_blank" class="btn btn-secondary">
+        🧾 View E-Receipt
+    </a>
+</div>
+
+

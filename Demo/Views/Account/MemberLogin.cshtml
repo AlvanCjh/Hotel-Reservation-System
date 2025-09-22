@@ -1,0 +1,73 @@
+﻿@inject IConfiguration Configuration
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Member Login";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/login.css" />
+}
+
+
+<div class="login-container">
+<form id="login-form" method="post" asp-action="MemberLogin">
+
+    <input name="email" type="email" placeholder="Email" required />
+
+    <input name="password" type="password" placeholder="Password" required />
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger" id="login-error">@ViewBag.Error</div>
+    }
+    <div id="lockout-msg" style="margin-top:10px;color:#b00;"></div>
+
+    <div class="g-recaptcha" data-sitekey="@Configuration["GoogleReCaptcha:SiteKey"]"></div>
+
+    <button id="login-btn" type="submit">Log In</button>
+
+    <div class="switch-login">
+        <p>Are you an admin? <a asp-action="AdminLogin">Login here</a></p>
+        <p>Don't have an account? <a asp-action="SignUp">Sign up</a></p>
+    </div>
+</form>
+</div>
+
+
+
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+@section Scripts {
+    <script>
+        (function () {
+            const lockoutSeconds = @((ViewBag.LockoutSeconds ?? 0));
+            if (lockoutSeconds && lockoutSeconds > 0) {
+                let seconds = lockoutSeconds;
+                const btn = document.getElementById('login-btn');
+                const form = document.getElementById('login-form');
+                const inputs = form.querySelectorAll('input');
+                const msg = document.getElementById('lockout-msg');
+
+                // disable form
+                btn.disabled = true;
+                inputs.forEach(i => i.disabled = true);
+
+                const tick = () => {
+                    if (seconds <= 0) {
+                        btn.disabled = false;
+                        inputs.forEach(i => i.disabled = false);
+                        msg.innerText = "You can try logging in again.";
+                        clearInterval(timer);
+                    } else {
+                        msg.innerText = `Please wait ${seconds} second(s) before trying again.`;
+                        seconds--;
+                    }
+                };
+
+                tick();
+                const timer = setInterval(tick, 1000);
+            }
+        })();
+    </script>
+}

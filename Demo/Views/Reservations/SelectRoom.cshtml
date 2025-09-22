@@ -1,0 +1,37 @@
+﻿@model List<Room>
+
+@{
+    ViewData["Title"] = "Room selection";
+    Layout = "_Layout";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/reservation.css" />
+}
+<div class="reservation-container">
+    <h2>Select a Room to Reserve</h2>
+</div>
+
+<div class ="reservation-content">
+    <div class="row">
+        @foreach (var room in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Room @room.RoomId</h5>
+                        <p class="card-text">
+                            Type: @room.RoomType?.Name<br>
+                            Price: @room.RoomType?.Price.ToString("C")/night
+                        </p>
+                        <a asp-action="Create" asp-route-roomId="@room.RoomId" class="btn btn-primary">
+                            Select This Room
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+    
+

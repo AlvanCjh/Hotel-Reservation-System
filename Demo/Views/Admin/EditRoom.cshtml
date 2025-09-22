@@ -1,0 +1,120 @@
+﻿@model Demo.Models.RoomCreateEditViewModel
+
+@{
+    ViewData["Title"] = "Edit Room";
+    Layout = "_Layout";
+}
+
+<head>
+    <link rel="stylesheet" href="~/css/userManage.css" />
+</head>
+
+<div class="admin-container">
+    <h1>Edit Room</h1>
+    <p class="admin-subtitle">Modify room details</p>
+
+    <div class="form-container" style="max-width: 600px; margin: auto; margin-top: 20px;">
+        <!-- Main form for updating room -->
+        <form asp-action="EditRoom" asp-route-roomId="@Model.RoomId" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group" style="margin-bottom: 18px;">
+                <label asp-for="RoomId"></label>
+                <input asp-for="RoomId" class="form-control" readonly />
+            </div>
+
+            <div class="form-group" style="margin-bottom: 18px;">
+                <label asp-for="TypeId">Room Type</label>
+                <select asp-for="TypeId" class="form-control" asp-items="Model.RoomTypeItems">
+                    <option value="">-- Select Type --</option>
+                </select>
+                <span asp-validation-for="TypeId" class="text-danger"></span>
+            </div>
+
+            <!-- Description -->
+            <div class="form-group" style="margin-bottom: 18px;">
+                <label asp-for="Description">Description</label>
+                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <!-- Upload new images -->
+            <div class="form-group" style="margin-bottom: 18px;">
+                <label asp-for="UploadedImages">Upload New Images</label>
+                <input asp-for="UploadedImages" type="file" class="form-control" multiple />
+                <span asp-validation-for="UploadedImages" class="text-danger"></span>
+            </div>
+
+            <!-- Existing Images -->
+            @if (Model.ExistingImages != null && Model.ExistingImages.Any())
+            {
+                <div class="form-group" style="margin-bottom:18px;">
+                    <label>Existing Images</label>
+                    <div style="display:flex; flex-wrap:wrap; gap:10px;">
+                        @foreach (var img in Model.ExistingImages)
+                        {
+                            <div class="image-card" style="position:relative;" id="img-@img.GetHashCode()">
+                                <img src="@img" alt="Room Image"
+                                     style="width:120px; height:auto; border-radius:6px; border:1px solid #ccc;" />
+
+                                <!-- Delete button (Ajax) -->
+                                <button type="button"
+                                        class="btn btn-sm delete-image"
+                                        style="position:absolute; top:5px; right:5px; background:#e74c3c; color:white; border:none; border-radius:4px; padding:2px 6px;"
+                                        data-roomid="@Model.RoomId"
+                                        data-imageurl="@img">
+                                    ✕
+                                </button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            <div style="margin-top: 24px;">
+                <button type="submit" class="btn btn-view" style="background-color:#f39c12;">
+                    <i class="fas fa-save"></i> Update
+                </button>
+                <a asp-action="RoomManage" class="btn" style="margin-left:10px; text-decoration:none; padding:8px 14px; background:#bdc3c7; color:#2c3e50; border-radius:6px;">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                document.querySelectorAll(".delete-image").forEach(btn => {
+                    btn.addEventListener("click", function () {
+                        if (!confirm("Remove this image?")) return;
+
+                        const roomId = this.dataset.roomid;
+                        const imageUrl = this.dataset.imageurl;
+                        const imageCard = this.closest(".image-card");
+
+                        fetch('/Admin/DeleteRoomImage', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                            },
+                            body: JSON.stringify({ roomId, imageUrl })
+                        })
+                        .then(res => {
+                            if (res.ok) {
+                                imageCard.remove(); // remove image from DOM
+                            } else {
+                                alert("Failed to delete image.");
+                            }
+                        })
+                        .catch(() => alert("Error deleting image."));
+                    });
+                });
+            });
+        </script>
+    }
+</div>

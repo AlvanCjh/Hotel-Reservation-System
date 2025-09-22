@@ -1,0 +1,68 @@
+﻿@model List<Demo.Models.ReservationListItemViewModel>
+@{
+    ViewData["Title"] = "Reservations";
+    Layout = "_Layout";
+}
+
+<link rel="stylesheet" href="~/css/userManage.css" />
+
+<div class="admin-container">
+    <h1>Reservation Management</h1>
+    <p class="admin-subtitle">View user reservations</p>
+
+    <div style="margin-bottom: 16px;">
+        <form method="get" asp-action="ReservationManage" class="d-flex" style="gap:10px; flex-wrap:wrap;">
+            <input type="text" name="userEmail" placeholder="Filter by user email" class="form-control"
+                   value="@(ViewBag.FilterEmail ?? "")" style="max-width:300px;" />
+
+            <button type="submit" class="btn btn-view" style="background-color:#3498db;">
+                <i class="fas fa-filter"></i> Filter
+            </button>
+            <a asp-action="ReservationManage" class="btn" style="padding:8px 14px; background:#bdc3c7; color:#2c3e50; border-radius:6px; text-decoration:none;">Clear</a>
+        </form>
+    </div>
+
+    <div class="user-list">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Reservation ID</th>
+                    <th>User</th>
+                    <th>Room</th>
+                    <th>Type</th>
+                    <th>Check-In</th>
+                    <th>Check-Out</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Detail</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var r in Model)
+                {
+                    <tr>
+                        <td>@r.ReservationId</td>
+                        <td>@r.UserName <br /><small>@r.UserEmail</small></td>
+                        <td>@r.RoomId</td>
+                        <td>@r.RoomTypeName</td>
+                        <td>@r.CheckIn.ToString("yyyy-MM-dd")</td>
+                        <td>@r.CheckOut.ToString("yyyy-MM-dd")</td>
+                        <td>@r.TotalPrice.ToString("C")</td>
+                        <td>@r.Status</td>
+                        <td>
+                            <a asp-action="ReservationDetails" asp-route-reservationId="@r.ReservationId" class="btn btn-view" style="background-color:#27ae60;">
+                                <i class="fas fa-eye"></i> View
+                            </a>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="9">No reservations found.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

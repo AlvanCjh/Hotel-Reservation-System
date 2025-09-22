@@ -1,0 +1,75 @@
+﻿@model List<Demo.Models.RoomListItemViewModel>
+
+@{
+    ViewData["Title"] = "Room Management";
+    Layout = "_Layout";
+}
+
+<head>
+    <link rel="stylesheet" href="~/css/userManage.css" />
+</head>
+
+<div class="admin-container">
+    <div class="d-flex" style="justify-content: space-between; align-items: center;">
+        <div>
+            <h1>Room Management</h1>
+            <p class="admin-subtitle">Add, edit, or delete rooms</p>
+        </div>
+        <div>
+            <a asp-controller="Admin" asp-action="AddRoom" class="btn btn-view" style="background-color:#3498db;">
+                <i class="fas fa-plus"></i> Add New Room
+            </a>
+        </div>
+    </div>
+
+    <div class="user-list" style="margin-top: 20px;">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Room ID</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Images</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var room in Model)
+                {
+                    <tr>
+                        <td>@room.RoomId</td>
+                        <td>@room.TypeName</td>
+                        <td>@room.Description</td>
+                        <td>
+                            @if (room.ImageUrls != null && room.ImageUrls.Any())
+                            {
+                                <img src="@room.ImageUrls.First()" alt="Room Image"
+                                     style="width:100px; height:auto; border-radius:6px;" />
+                                @if (room.ImageUrls.Count > 1)
+                                {
+                                    <span style="color:#888;">(+@room.ImageUrls.Count more)</span>
+                                }
+                            }
+                            else
+                            {
+                                <span style="color:#888;">No images</span>
+                            }
+                        </td>
+                        <td>
+                            <a asp-action="EditRoom" asp-route-roomId="@room.RoomId"
+                               class="btn btn-view" style="background-color:#f39c12;">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="5">No rooms found.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

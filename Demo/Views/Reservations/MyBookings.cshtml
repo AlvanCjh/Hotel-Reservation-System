@@ -1,0 +1,70 @@
+﻿@model Demo.Models.MyBookingsViewModel
+
+@{
+    ViewData["Title"] = "My Bookings";
+    Layout = "_Layout";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/reservation.css" />
+}
+
+<div class="reservation-container">
+<h1>My Bookings</h1>
+</div>
+
+<div class="reservation-content">
+<h2>Upcoming Reservations</h2>
+@if (Model.UpcomingReservations.Any())
+{
+    <div class="row">
+        @foreach (var res in Model.UpcomingReservations)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">@res.RoomTypeName (Room @res.RoomId)</h5>
+                        <p class="card-text">
+                            <strong>Check-In:</strong> @res.CheckIn <br />
+                            <strong>Check-Out:</strong> @res.CheckOut <br />
+                            <strong>Status:</strong> @res.Status <br />
+                            <strong>Total:</strong> @res.TotalPrice.ToString("C")
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p>No upcoming reservations.</p>
+}
+
+<h2>Past Reservations</h2>
+@if (Model.PastReservations.Any())
+{
+    <div class="row">
+        @foreach (var res in Model.PastReservations)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">@res.RoomTypeName (Room @res.RoomId)</h5>
+                        <p class="card-text">
+                            <strong>Check-In:</strong> @res.CheckIn <br />
+                            <strong>Check-Out:</strong> @res.CheckOut <br />
+                            <strong>Status:</strong> @res.Status <br />
+                            <strong>Total:</strong> @res.TotalPrice.ToString("C")
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p>No past reservations.</p>
+}
+</div>

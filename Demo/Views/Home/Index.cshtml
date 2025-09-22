@@ -1,0 +1,105 @@
+﻿@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Home";
+}
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>Experience Unparalleled Luxury</h1>
+        <p>Discover the perfect blend of comfort, elegance, and exceptional service at YOBITA</p>
+    </div>
+</section>
+
+<!-- Gallery Link -->
+<form>
+    <button a asp-controller="Gallery" asp-action="Index" class="btn btn-reserve">
+        Explore our Hotel!
+    </button>
+</form>
+
+<!-- Gallery Section -->
+<div class="gallery-section">
+    <div class="gallery-item">
+        <img src="~/images/Hotel image 2.png" alt="Single Room" />
+    </div>
+    <div class="gallery-item">
+        <img src="~/images/Dining image 2.png" alt="Single Room" />
+    </div>
+    <div class="gallery-item">
+        <img src="~/images/Hotel image 1.png" alt="Single Room" />
+    </div>
+    <div class="gallery-item">
+        <img src="~/images/Room image 5.png" alt="Single Room" />
+    </div>
+</div>
+
+<form>
+<button a asp-controller="Reservations" asp-action="Index" class="btn btn-reserve">
+    Start Booking Now!
+</button>
+</form>
+
+<!-- Google Map Section -->
+<section class="map-section">
+    <div class="container">
+        <h2 class="map-title">Destination</h2>
+        <div id="store-map" style="width: 100%; height: 400px; border-radius: 12px;"></div>
+    </div>
+</section>
+
+<script>
+    // Set default dates for check-in and check-out
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    document.getElementById('checkin').valueAsDate = today;
+    document.getElementById('checkout').valueAsDate = tomorrow;
+
+    // Form submission
+    document.querySelector('form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        alert('Reservation request received! Our team will contact you shortly.');
+    });
+
+    // Google Map
+    function initMap() {
+        const storeLocation = { lat: 5.970556, lng: 116.066389 };
+
+        const map = new google.maps.Map(document.getElementById("store-map"), {
+            zoom: 15,
+            center: storeLocation,
+            styles: [
+                {
+                    featureType: "poi",
+                    elementType: "labels",
+                    stylers: [{ visibility: "off" }]
+                }
+            ]
+        });
+
+        const marker = new google.maps.Marker({
+            position: storeLocation,
+            map: map,
+            title: "Yobisual Store Location",
+            icon: {
+                url: "/images/map-marker.png",
+                scaledSize: new google.maps.Size(40, 40)
+            }
+        });
+
+        const infoWindow = new google.maps.InfoWindow({
+            content: "<h3>YOBITA</h3><p>KK Times Square</p>"
+        });
+
+        marker.addListener('click', () => {
+            infoWindow.open(map, marker);
+        });
+
+        infoWindow.open(map, marker);
+    }
+
+    window.initMap = initMap;
+
+ 
+</script>

@@ -1,0 +1,61 @@
+﻿<!-- Top Navigation -->
+<div class="top-nav">
+    <div class="container">
+        <a href="#" class="logo">YOB<span>ITA</span></a>
+        <div class="auth-buttons">
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <div class="btn btn-login">
+                    <a asp-controller="Account" asp-action="Profile">
+                        Hello, @(User.FindFirst("FullName")?.Value ?? User.Identity.Name)
+                    </a>
+                </div>
+                
+                <a href="/Account/Logout" class="btn btn-logout">Log Out</a>
+                <div id="google_translate_element"></div>
+
+            }
+            else
+            {
+                <a href="/Account/SignUp" class="btn btn-signin">Sign In</a>
+                <a asp-controller="Account" asp-action="MemberLogin" class="btn btn-login">Member Login</a>
+                <div id="google_translate_element"></div>
+            }
+        </div>
+    </div>
+
+    
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+          new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
+        }
+    </script>
+
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+</div>
+
+<!-- Main Navigation -->
+<nav class="main-nav">
+    <div class="container">
+        <ul class="nav-links">
+            @if (User.Identity?.IsAuthenticated == true && User.IsInRole("admin"))
+            {
+                <li><a asp-controller="Admin" asp-action="Dashboard">Dashboard</a></li>
+                <li><a asp-controller="Admin" asp-action="UserManage">Users Management</a></li>
+                <li><a asp-controller="Admin" asp-action="ReservationManage">Reservation Management</a></li>
+                <li><a asp-controller="Admin" asp-action="RoomManage">Room Management</a></li>
+            }
+            else
+            {
+                <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+                <li><a class="nav-link" asp-controller="Home" asp-action="About">About</a></li>
+                <li><a asp-controller="Rooms" asp-action="Index">Rooms and Suites</a></li>
+                <li><a asp-controller="Home" asp-action="Dining">Dining</a></li>
+                <li><a asp-controller="Home" asp-action="Experience">Experience</a></li>
+                <li><a href="@Url.Action("Index", "Gallery")">Gallery</a></li>
+                <li><a href="#contact">Contact</a></li>
+            }
+        </ul>
+    </div>
+</nav>

@@ -1,0 +1,117 @@
+﻿/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #fdfdfd;
+    color: #333;
+}
+
+/* Gallery Section Container */
+.gallery-section {
+    margin: 40px auto;
+    max-width: 1200px;
+    padding: 20px;
+    animation: fadeIn 0.8s ease;
+}
+
+/* Section Title */
+.gallery-category h2 {
+    font-size: 28px;
+    margin-bottom: 25px;
+    color: #2c3e50;
+    text-align: center;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+    .gallery-category h2::after {
+        content: "";
+        width: 60px;
+        height: 3px;
+        background: #0077cc;
+        display: block;
+        margin: 8px auto 0;
+        border-radius: 5px;
+    }
+
+/* Gallery Items Grid */
+.gallery-items {
+    display: flex;
+    gap: 25px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* Card Styling */
+.gallery-card {
+    max-width: 300px;
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: slideUp 0.7s ease forwards;
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+    .gallery-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .gallery-card img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+        border-bottom: 1px solid #eee;
+        transition: transform 0.3s ease;
+    }
+
+    .gallery-card:hover img {
+        transform: scale(1.03);
+    }
+
+/* Animations */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Layout */
+@media (max-width: 768px) {
+    .gallery-items {
+        gap: 20px;
+    }
+
+    .gallery-card {
+        max-width: 90%;
+    }
+}
+
+@media (max-width: 576px) {
+    .gallery-card {
+        max-width: 100%;
+    }
+
+    .gallery-category h2 {
+        font-size: 22px;
+    }
+}

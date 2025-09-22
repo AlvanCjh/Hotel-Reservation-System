@@ -1,0 +1,29 @@
+﻿@model Demo.Models.User
+@inject IConfiguration Configuration
+
+@{
+    ViewData["Title"] = "SignUp";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/login.css" />
+}
+
+<div class="login-container">
+<form asp-controller="Account" asp-action="SignUp" method="post">
+
+        <input asp-for="Email" placeholder="Email" required />
+
+ 
+        <input asp-for="Name" placeholder="Name" required />
+
+ 
+        <input asp-for="Password" type="password" placeholder="password" required />
+
+    <div class="g-recaptcha" data-sitekey="@Configuration["GoogleReCaptcha:SiteKey"]"></div>
+    <button type="submit">Sign Up</button>
+</form>
+</div>
+
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>

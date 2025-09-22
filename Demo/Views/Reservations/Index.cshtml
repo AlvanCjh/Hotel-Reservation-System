@@ -1,0 +1,149 @@
+﻿@model IEnumerable<Demo.Controllers.RoomAvailabilityViewModel>
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Available Rooms";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/reservation.css" />
+}
+
+<div class="reservation-container">
+    <div class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="mb-0">Room Availability</h1>
+            <div>
+                <a class="btn btn-outline-primary me-2" asp-controller="Reservations" asp-action="MyBookings">
+                    <i class="fas fa-list"></i> My Bookings
+                </a>
+                <a class="btn btn-primary" asp-controller="Reservations" asp-action="Create" asp-route-roomId="">
+                    <i class="fas fa-calendar-plus"></i> New Reservation
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="reservation-content">
+    <div class="container mt-4">
+        <h2 class="mb-4">Available Rooms</h2>
+
+        <!-- Date filter form -->
+        <form method="get" asp-action="Index" class="row g-3 mb-4">
+            <div class="col-md-4">
+                <label for="checkIn" class="form-label">Check-In Date</label>
+                <input type="date" class="form-control" id="checkIn" name="checkIn"
+                       value="@ViewBag.CheckIn" required />
+            </div>
+            <div class="col-md-4">
+                <label for="checkOut" class="form-label">Check-Out Date</label>
+                <input type="date" class="form-control" id="checkOut" name="checkOut"
+                       value="@ViewBag.CheckOut" required />
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-search"></i> Check Availability
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Availability message -->
+    @if (ViewBag.CheckIn != null && ViewBag.CheckOut != null)
+    {
+        <div class="alert alert-info">
+            Showing availability from
+            <strong>@ViewBag.CheckIn</strong> to <strong>@ViewBag.CheckOut</strong>
+        </div>
+    }
+
+    <!-- Room listing -->
+
+    <div class="grid-item img">
+        <div class="row">
+            @foreach (var room in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm h-100">
+
+                        <h5 class="card-title">@room.TypeName</h5>
+
+                        <!-- Room image -->
+                        @if (!string.IsNullOrEmpty(room.RoomImage))
+                        {
+                            <img src="@room.RoomImage" class="card-img-top" alt="@room.TypeName" />
+                        }
+                        else
+                        {
+                            <img src="~/images/no-image.png" class="card-img-top" alt="No Image" />
+                        }
+
+                        <div class="card-body">
+                            <p class="card-text">@room.Description</p>
+                            <p><strong>Price:</strong> RM @room.Price</p>
+
+                            @if (room.HasActiveReservation)
+                            {
+                                <span class="badge bg-danger">Occupied</span>
+
+                                @if (room.CurrentReservation != null)
+                                {
+                                    <div class="mt-2">
+                                        <small><strong>Check-In:</strong> @room.CurrentReservation.CheckIn.ToString("d")</small><br />
+                                        <small><strong>Check-Out:</strong> @room.CurrentReservation.CheckOut.ToString("d")</small>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">Available</span>
+                            }
+                        </div>
+
+                        <div class="card-footer text-center">
+                            @if (room.HasActiveReservation && room.CurrentReservation != null)
+                            {
+                                <div class="d-flex gap-2">
+                                    @if (room.CurrentReservation.Status == ReservationStatus.Pending)
+                                    {
+                                        <form asp-action="CheckIn" method="post" class="flex-fill">
+                                            <input type="hidden" name="id" value="@room.CurrentReservation.ReservationId" />
+                                            <button type="submit" class="btn btn-primary w-100">
+                                                <i class="fas fa-sign-in-alt"></i> Check In
+                                            </button>
+                                        </form>
+                                    }
+                                    @if (room.CurrentReservation.Status == ReservationStatus.CheckedIn)
+                                    {
+                                        <form asp-action="CheckOut" method="post" class="flex-fill">
+                                            <input type="hidden" name="id" value="@room.CurrentReservation.ReservationId" />
+                                            <button type="submit" class="btn btn-warning w-100">
+                                                <i class="fas fa-sign-out-alt"></i> Check Out
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <a asp-action="Create"
+                                   asp-route-roomId="@room.RoomId"
+                                   asp-route-checkIn="@ViewBag.CheckIn"
+                                   asp-route-checkOut="@ViewBag.CheckOut"
+                                   class="btn btn-success w-100">
+                                    <i class="fas fa-book"></i> Book This Room
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+}
